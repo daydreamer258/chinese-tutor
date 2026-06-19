@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>蜀道难 — 李白 高中语文教学</title>
+  <style>
+    :root {
+      --bg: #1a1208;
+      --fg: #e8dcc8;
+      --accent: #c77d3a;
+      --highlight: #e85d3a;
+      --muted: #8b7355;
+      --card: #241a0e;
+      --shadow: rgba(0,0,0,0.4);
+      --font-heading: 'Noto Serif SC', 'SimSun', 'STSong', serif;
+      --font-body: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--fg);
+      overflow: hidden;
+    }
+
+    .reveal {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 100px;
+      position: absolute;
+      top: 0; left: 0;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .slide h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 24px;
+      font-family: var(--font-heading);
+      letter-spacing: 0.05em;
+    }
+
+    .slide h2 {
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-family: var(--font-heading);
+    }
+
+    .slide h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .slide ul {
+      list-style: none;
+      margin: 20px 0;
+    }
+
+    .slide li {
+      font-size: 1.15rem;
+      line-height: 1.9;
+      padding: 6px 0;
+      position: relative;
+      padding-left: 28px;
+    }
+
+    .slide li::before {
+      content: "◆";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 0.6rem;
+      top: 0.75rem;
+    }
+
+    /* 标题页 */
+    .title-slide {
+      text-align: center;
+      background: radial-gradient(ellipse at center, #2a1f10 0%, var(--bg) 70%);
+    }
+
+    .title-slide h1 {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      color: var(--highlight);
+      text-shadow: 0 2px 12px rgba(232,93,58,0.3);
+    }
+
+    .title-slide h2 {
+      font-size: 1.5rem;
+      font-weight: 400;
+    }
+
+    .title-slide .author {
+      margin-top: 48px;
+      font-size: 1rem;
+      color: var(--muted);
+    }
+
+    /* 结束页 */
+    .end-slide {
+      text-align: center;
+      background: radial-gradient(ellipse at center, #2a1f10 0%, var(--bg) 70%);
+    }
+
+    .end-slide h1 {
+      font-size: 3.5rem;
+      color: var(--accent);
+    }
+
+    /* 布局 */
+    .cols {
+      display: flex;
+      gap: 40px;
+      margin-top: 24px;
+    }
+
+    .col {
+      flex: 1;
+    }
+
+    .cols.three { gap: 28px; }
+    .cols.three .col { flex: 1; }
+
+    /* 卡片 */
+    .card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 28px;
+      box-shadow: 0 2px 12px var(--shadow);
+      margin: 8px 0;
+      border-left: 3px solid var(--accent);
+    }
+
+    .card h3 {
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-size: 1.2rem;
+    }
+
+    .card p, .card li {
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    /* 引用/诗句 */
+    blockquote {
+      border-left: 4px solid var(--highlight);
+      padding: 20px 32px;
+      font-size: 1.6rem;
+      font-family: var(--font-heading);
+      color: var(--fg);
+      margin: 24px 0;
+      background: var(--card);
+      border-radius: 0 8px 8px 0;
+      line-height: 1.8;
+      letter-spacing: 0.03em;
+    }
+
+    blockquote.centered {
+      text-align: center;
+      border: none;
+      background: transparent;
+      font-size: 2rem;
+    }
+
+    /* 步骤条 */
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      margin: 40px 0;
+    }
+
+    .step {
+      flex: 1;
+      text-align: center;
+      position: relative;
+      padding: 0 16px;
+    }
+
+    .step::after {
+      content: "";
+      position: absolute;
+      top: 24px;
+      right: -50%;
+      width: 100%;
+      height: 2px;
+      background: var(--muted);
+      opacity: 0.4;
+      transform: translateX(-50%);
+    }
+
+    .step:last-child::after { display: none; }
+
+    .step .step-num {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      font-family: var(--font-heading);
+    }
+
+    .step .step-label {
+      font-size: 0.95rem;
+      color: var(--fg);
+      line-height: 1.5;
+    }
+
+    /* 标签 */
+    .tag {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    /* 高亮 */
+    .highlight-text {
+      color: var(--highlight);
+      font-weight: 600;
+    }
+
+    /* 注释 */
+    .note {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    /* 导航 */
+    .nav {
+      position: fixed;
+      bottom: 24px;
+      right: 32px;
+      display: flex;
+      gap: 12px;
+      z-index: 100;
+    }
+
+    .nav button {
+      background: var(--card);
+      border: 1px solid var(--muted);
+      color: var(--fg);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      font-family: var(--font-body);
+    }
+
+    .nav button:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .page-num {
+      position: fixed;
+      bottom: 28px;
+      left: 32px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      z-index: 100;
+    }
+
+    /* 动画 */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide.active h1,
+    .slide.active h2,
+    .slide.active li,
+    .slide.active .card,
+    .slide.active blockquote,
+    .slide.active .steps,
+    .slide.active p {
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .slide.active li:nth-child(2) { animation-delay: 0.08s; }
+    .slide.active li:nth-child(3) { animation-delay: 0.16s; }
+    .slide.active li:nth-child(4) { animation-delay: 0.24s; }
+    .slide.active li:nth-child(5) { animation-delay: 0.32s; }
+    .slide.active .card:nth-child(2) { animation-delay: 0.12s; }
+    .slide.active .card:nth-child(3) { animation-delay: 0.24s; }
+
+    /* 打印 */
+    @media print {
+      body { overflow: visible; }
+      .slide {
+        position: relative;
+        display: flex !important;
+        opacity: 1 !important;
+        page-break-after: always;
+        height: auto;
+        min-height: 100vh;
+        padding: 60px 80px;
+      }
+      .nav, .page-num { display: none; }
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .slide { padding: 40px; }
+      .slide h1 { font-size: 1.8rem; }
+      .slide .title-slide h1 { font-size: 2.5rem; }
+      blockquote { font-size: 1.2rem; }
+      .cols { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="reveal">
+
+    <!-- Slide 1: 标题页 -->
+    <section class="slide title-slide active">
+      <h1>蜀道难</h1>
+      <h2>李白 · 浪漫主义的巅峰之作</h2>
+      <p class="author">高中语文 · 唐诗鉴赏</p>
+    </section>
+
+    <!-- Slide 2: 学习目标 -->
+    <section class="slide">
+      <h1>本课学习目标</h1>
+      <div class="cols three">
+        <div class="card">
+          <h3>📖 理解内容</h3>
+          <p>梳理诗歌结构，理解"蜀道之难，难于上青天"的三层递进</p>
+        </div>
+        <div class="card">
+          <h3>🎨 品味手法</h3>
+          <p>鉴赏夸张、想象、神话典故等浪漫主义手法</p>
+        </div>
+        <div class="card">
+          <h3>💭 感悟情感</h3>
+          <p>体会诗人对蜀道艰险的惊叹与对友人的关切</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3: 作者与背景 -->
+    <section class="slide">
+      <h1>李白与《蜀道难》</h1>
+      <div class="cols">
+        <div class="col">
+          <ul>
+            <li><span class="highlight-text">李白（701-762）</span>，字太白，号青莲居士</li>
+            <li>"诗仙"，浪漫主义诗歌最高代表</li>
+            <li>诗风：雄奇奔放、想象瑰丽、语言夸张</li>
+            <li>与杜甫并称"李杜"</li>
+          </ul>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3>创作背景</h3>
+            <p>约作于天宝初年（742-744），李白初到长安。一说为送友人王炎入蜀而作。诗中虽写蜀道之险，更有对仕途艰难的隐喻。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 4: 结构梳理 -->
+    <section class="slide">
+      <h1>诗歌结构：三次咏叹</h1>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">一</div>
+          <div class="step-label">开辟之难<br><span style="color:var(--muted)">神话传说</span></div>
+        </div>
+        <div class="step">
+          <div class="step-num">二</div>
+          <div class="step-label">攀登之险<br><span style="color:var(--muted)">山水描写</span></div>
+        </div>
+        <div class="step">
+          <div class="step-num">三</div>
+          <div class="step-label">战乱之忧<br><span style="color:var(--muted)">社会现实</span></div>
+        </div>
+      </div>
+      <blockquote style="font-size:1.3rem; margin-top:32px; text-align:center;">
+        "蜀道之难，难于上青天"——一声三叹，层层递进
+      </blockquote>
+    </section>
+
+    <!-- Slide 5: 第一段：开辟之难 -->
+    <section class="slide">
+      <h1>第一段：开辟之难</h1>
+      <blockquote>
+        噫吁嚱，危乎高哉！<br>蜀道之难，难于上青天！<br>蚕丛及鱼凫，开国何茫然！<br>尔来四万八千岁，不与秦塞通人烟。
+      </blockquote>
+      <ul>
+        <li><span class="highlight-text">开篇惊呼</span>："噫吁嚱"三个叹词连用，先声夺人</li>
+        <li><span class="highlight-text">神话入诗</span>：蚕丛、鱼凫——古蜀国开国君主，营造神秘氛围</li>
+        <li><span class="highlight-text">数字夸张</span>："四万八千岁"，极言时间之久远</li>
+        <li><span class="highlight-text">手法</span>：神话传说 + 时间夸张 → 奠定全诗基调</li>
+      </ul>
+    </section>
+
+    <!-- Slide 6: 五丁开山 -->
+    <section class="slide">
+      <h1>神话典故：五丁开山</h1>
+      <blockquote>
+        地崩山摧壮士死，<br>然后天梯石栈相钩连。
+      </blockquote>
+      <div class="cols">
+        <div class="col">
+          <div class="card">
+            <h3>典故内容</h3>
+            <p>秦王送五美女给蜀王，蜀王派五壮士（五丁）迎接。途中遇大蛇，五丁拽蛇导致山崩，五壮士与美女都被压死，山分五岭。</p>
+          </div>
+        </div>
+        <div class="col">
+          <ul>
+            <li>以神话写蜀道之<span class="highlight-text">险绝</span></li>
+            <li>"地崩山摧"——山崩地裂的想象</li>
+            <li>"壮士死"——代价之惨烈</li>
+            <li>蜀道的开辟，充满<span class="highlight-text">悲壮</span>色彩</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7: 第二段：攀登之险 -->
+    <section class="slide">
+      <h1>第二段：攀登之险</h1>
+      <blockquote>
+        上有六龙回日之高标，<br>下有冲波逆折之回川。<br>黄鹤之飞尚不得过，<br>猿猱欲度愁攀援。
+      </blockquote>
+      <div class="card" style="margin-top:20px;">
+        <h3>手法赏析</h3>
+        <p><span class="highlight-text">反衬</span>：龙尚须回车、黄鹤不能飞过、猿猱愁于攀爬——连擅长险境的生灵都无能为力，何况凡人？</p>
+      </div>
+    </section>
+
+    <!-- Slide 8: 第二段：山水奇景 -->
+    <section class="slide">
+      <h1>视听结合：山水奇景</h1>
+      <blockquote>
+        但见悲鸟号古木，雄飞雌从绕林间。<br>又闻子规啼夜月，愁空山。
+      </blockquote>
+      <ul>
+        <li><span class="highlight-text">视觉</span>："悲鸟号古木"——荒凉、幽深</li>
+        <li><span class="highlight-text">听觉</span>："子规啼夜月"——杜鹃啼血，哀婉凄厉</li>
+        <li><span class="highlight-text">意象</span>：悲鸟、古木、子规、夜月、空山 → <span class="highlight-text">凄清空寂</span></li>
+        <li><span class="highlight-text">情感</span>：由外在的险，转向内心的悲与孤</li>
+      </ul>
+    </section>
+
+    <!-- Slide 9: 第三段：战乱之忧 -->
+    <section class="slide">
+      <h1>第三段：战乱之忧</h1>
+      <blockquote>
+        剑阁峥嵘而崔嵬，<br>一夫当关，万夫莫开。<br>所守或匪亲，化为狼与豺。
+      </blockquote>
+      <ul>
+        <li><span class="highlight-text">地势之险</span>：剑阁——"一夫当关，万夫莫开"</li>
+        <li><span class="highlight-text">政治隐喻</span>："所守或匪亲，化为狼与豺"——如果守将不是可靠之人，就会变成豺狼</li>
+        <li>蜀地易守难攻，历史上多次成为割据之地</li>
+        <li>从<span class="highlight-text">自然之险</span>升华到<span class="highlight-text">人事之忧</span></li>
+      </ul>
+    </section>
+
+    <!-- Slide 10: 浪漫主义手法总结 -->
+    <section class="slide">
+      <h1>浪漫主义手法总结</h1>
+      <div class="cols">
+        <div class="col">
+          <div class="card">
+            <h3>🎭 神话传说</h3>
+            <p>蚕丛鱼凫、五丁开山、六龙回日——将历史神话化，营造奇崛氛围</p>
+          </div>
+          <div class="card">
+            <h3>📐 极度夸张</h3>
+            <p>"难于上青天""四万八千岁""百步九折""连峰去天不盈尺"</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3>🖼️ 丰富想象</h3>
+            <p>"飞湍瀑流争喧豗，砯崖转石万壑雷"——将声音转化为雷霆万钧的视觉画面</p>
+          </div>
+          <div class="card">
+            <h3>💫 强烈情感</h3>
+            <p>开篇惊呼→中间惊叹→结尾忧虑，情感充沛、直抒胸臆</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 11: 艺术特色 -->
+    <section class="slide">
+      <h1>艺术特色：一唱三叹</h1>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">①</div>
+          <div class="step-label">"蜀道之难，难于上青天"<br><span style="color:var(--muted)">开篇：惊叹</span></div>
+        </div>
+        <div class="step">
+          <div class="step-num">②</div>
+          <div class="step-label">"使人听此凋朱颜"<br><span style="color:var(--muted)">中间：震慑</span></div>
+        </div>
+        <div class="step">
+          <div class="step-num">③</div>
+          <div class="step-label">"侧身西望长咨嗟"<br><span style="color:var(--muted)">结尾：忧思</span></div>
+        </div>
+      </div>
+      <p style="text-align:center; margin-top:32px; font-size:1.1rem; color:var(--accent);">
+        主旋律三次出现——形成回环往复的咏叹效果
+      </p>
+    </section>
+
+    <!-- Slide 12: 语言风格 -->
+    <section class="slide">
+      <h1>语言风格：参差奔放</h1>
+      <div class="cols">
+        <div class="col">
+          <div class="card">
+            <h3>句式参差</h3>
+            <p>三言、四言、五言、七言、九言、十一言——长短交错，自由奔放</p>
+            <p class="note">"噫吁嚱"（三言）<br>→ "尔来四万八千岁"（七言）<br>→ "嗟尔远道之人胡为乎来哉"（十一言）</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3>韵律特点</h3>
+            <p>多次换韵，随情感起伏而变化</p>
+            <p>平仄交错，读来跌宕起伏</p>
+            <p class="note">如"天/烟/连/川/援"一组平声韵，写高远<br>转"尺/壁/石/雷/豺"入仄韵，写险恶</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 13: 名句赏析 -->
+    <section class="slide">
+      <h1>名句赏析</h1>
+      <blockquote class="centered">
+        蜀道之难，难于上青天，<br>使人听此凋朱颜。
+      </blockquote>
+      <ul>
+        <li><span class="highlight-text">"难于上青天"</span>：千古名喻。用登天的不可实现，来比蜀道的难以逾越。</li>
+        <li><span class="highlight-text">"凋朱颜"</span>：不说害怕，而说容颜凋谢——以容貌变化写内心震撼。化抽象恐惧为具象画面。</li>
+        <li>此句为全诗<span class="highlight-text">主旋律</span>的第二次出现，情感从开篇的惊叹递进为震慑。</li>
+      </ul>
+    </section>
+
+    <!-- Slide 14: 考题链接 -->
+    <section class="slide">
+      <h1>考题链接</h1>
+      <div class="cols">
+        <div class="col">
+          <div class="card">
+            <h3>常考默写句</h3>
+            <ul>
+              <li>尔来四万八千岁，______。</li>
+              <li>______，一夫当关，万夫莫开。</li>
+              <li>飞湍瀑流争喧豗，______。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3>常见赏析题</h3>
+            <ul>
+              <li>"蜀道之难，难于上青天"三次出现的作用？</li>
+              <li>分析诗歌的浪漫主义特色</li>
+              <li>"悲鸟号古木""子规啼夜月"的意境</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 15: 全文赏析 -->
+    <section class="slide">
+      <h1>全诗主旨</h1>
+      <blockquote style="font-size:1.4rem; text-align:center; border:none;">
+        以<span class="highlight-text">蜀道之险</span>，<br>写<span class="highlight-text">人生之艰</span>。
+      </blockquote>
+      <div class="cols three" style="margin-top:16px;">
+        <div class="card">
+          <h3>表层</h3>
+          <p>蜀地山川的险峻奇绝</p>
+          <p>对友人的担忧关切</p>
+        </div>
+        <div class="card">
+          <h3>深层</h3>
+          <p>对仕途艰险的隐喻</p>
+          <p>对国家命运的忧虑</p>
+        </div>
+        <div class="card">
+          <h3>永恒</h3>
+          <p>人对自然的震撼与敬畏</p>
+          <p>李白式的浪漫主义精神</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 16: 课堂小结 -->
+    <section class="slide">
+      <h1>课堂小结</h1>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">一</div>
+          <div class="step-label">结构<br><span style="color:var(--muted)">三部分递进</span></div>
+        </div>
+        <div class="step">
+          <div class="step-num">二</div>
+          <div class="step-label">手法<br><span style="color:var(--muted)">神话+夸张+想象</span></div>
+        </div>
+        <div class="step">
+          <div class="step-num">三</div>
+          <div class="step-label">情感<br><span style="color:var(--muted)">惊叹→震慑→忧虑</span></div>
+        </div>
+        <div class="step">
+          <div class="step-num">四</div>
+          <div class="step-label">语言<br><span style="color:var(--muted)">参差错落奔放</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 17: 延伸思考 -->
+    <section class="slide">
+      <h1>延伸思考</h1>
+      <div class="cols">
+        <div class="col">
+          <div class="card">
+            <h3>🤔 思考题</h3>
+            <p>李白为什么选择"蜀道"而不是其他艰险之物来写？蜀道的"难"在今天有什么新的含义？</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3>🔗 对比阅读</h3>
+            <p>比较李白《蜀道难》与杜甫《登高》——两位诗人面对"高"时的不同态度：一个惊叹而飞升，一个俯视而沉郁。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 18: 结束页 -->
+    <section class="slide end-slide">
+      <h1>蜀道难</h1>
+      <blockquote style="background:transparent; border:none; font-size:2rem; color:var(--accent);">
+        蜀道之难，难于上青天
+      </blockquote>
+      <p class="author">李白 · 盛唐气象</p>
+    </section>
+
+  </div>
+
+  <div class="nav">
+    <button onclick="prevSlide()">◀ 上一页</button>
+    <button onclick="nextSlide()">下一页 ▶</button>
+  </div>
+
+  <div class="page-num">
+    <span id="current-page">1</span> / <span id="total-pages">1</span>
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalPagesEl = document.getElementById('total-pages');
+    totalPagesEl.textContent = slides.length;
+
+    function showSlide(index) {
+      slides.forEach((s, i) => {
+        s.classList.toggle('active', i === index);
+      });
+      document.getElementById('current-page').textContent = index + 1;
+    }
+
+    function nextSlide() {
+      currentSlide = Math.min(currentSlide + 1, slides.length - 1);
+      showSlide(currentSlide);
+    }
+
+    function prevSlide() {
+      currentSlide = Math.max(currentSlide - 1, 0);
+      showSlide(currentSlide);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+        e.preventDefault(); nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault(); prevSlide();
+      } else if (e.key === 'Home') {
+        e.preventDefault(); currentSlide = 0; showSlide(0);
+      } else if (e.key === 'End') {
+        e.preventDefault(); currentSlide = slides.length - 1; showSlide(currentSlide);
+      }
+    });
+
+    showSlide(0);
+  </script>
+
+</body>
+</html>
